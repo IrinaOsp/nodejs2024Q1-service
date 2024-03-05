@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer';
 
-interface IUser {
+export interface IUser {
   id: string; // uuid v4
   login: string;
   password: string;

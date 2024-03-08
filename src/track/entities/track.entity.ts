@@ -12,4 +12,8 @@ export class Track implements ITrack {
   artistId: string | null;
   albumId: string | null;
   duration: number;
+
+  constructor(track: Partial<Track>) {
+    Object.assign(this, track);
+  }
 }

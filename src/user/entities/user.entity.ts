@@ -19,4 +19,7 @@ export class User implements IUser {
   version: number;
   createdAt: number;
   updatedAt: number;
+  constructor(user: Partial<User>) {
+    Object.assign(this, user);
+  }
 }

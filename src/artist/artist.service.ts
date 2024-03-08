@@ -46,10 +46,10 @@ export class ArtistService {
     }
     database.artists = database.artists.filter((artist) => artist.id !== id);
     database.tracks = database.tracks.map((track) =>
-      track.artistId === id ? (track.artistId = null) : track,
+      track.artistId === id ? { ...track, artistId: null } : track,
     );
     database.albums = database.albums.map((album) =>
-      album.artistId === id ? (album.artistId = null) : album,
+      album.artistId === id ? { ...album, artistId: null } : album,
     );
   }
 }

@@ -10,4 +10,8 @@ export class Album implements IAlbum {
   name: string;
   year: number;
   artistId: string | null;
+
+  constructor(album: Partial<Album>) {
+    Object.assign(this, album);
+  }
 }

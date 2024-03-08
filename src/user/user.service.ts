@@ -41,11 +41,7 @@ export class UserService {
       throw new NotFoundException(`User with id ${id} not found`);
     }
     if (user.password !== oldPassword) {
-      throw new ForbiddenException(
-        `Old password ${user.password} ${oldPassword}
-        ${newPassword}
-        ${user.password !== oldPassword} is wrong`,
-      );
+      throw new ForbiddenException(`Old password ${oldPassword} is wrong`);
     }
     user.password = newPassword;
     user.version++;

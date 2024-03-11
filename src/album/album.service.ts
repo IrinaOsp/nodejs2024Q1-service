@@ -12,7 +12,7 @@ export class AlbumService {
       id: uuidv4(),
       name: createAlbumDto.name,
       year: createAlbumDto.year,
-      artistId: createAlbumDto.artistId || null,
+      artistId: createAlbumDto.artistId ?? null,
     });
     database.albums.push(album);
     return album;
@@ -49,6 +49,9 @@ export class AlbumService {
     database.albums = database.albums.filter((album) => album.id !== id);
     database.tracks = database.tracks.map((track) =>
       track.albumId === id ? { ...track, albumId: null } : track,
+    );
+    database.favorites.albums = database.favorites.albums.filter(
+      (albumId) => albumId !== id,
     );
   }
 }

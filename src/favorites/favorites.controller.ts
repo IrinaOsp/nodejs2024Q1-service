@@ -1,34 +1,71 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Delete,
+  ParseUUIDPipe,
+  HttpCode,
+} from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { CreateFavoriteDto } from './dto/create-favorite.dto';
-import { UpdateFavoriteDto } from './dto/update-favorite.dto';
+import {
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
+import { IFavoritesResponse } from './interfaces/Ifavorites';
 
-@Controller('favorites')
+@ApiTags('Favorites')
+@Controller('favs')
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
-  @Post()
-  create(@Body() createFavoriteDto: CreateFavoriteDto) {
-    return this.favoritesService.create(createFavoriteDto);
-  }
-
   @Get()
-  findAll() {
+  @ApiOkResponse({ description: 'Lists of favorites' })
+  findAll(): IFavoritesResponse {
     return this.favoritesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.favoritesService.findOne(+id);
+  @Post('track/:id')
+  @HttpCode(201)
+  @ApiUnprocessableEntityResponse({ description: 'Track not found' })
+  addTrackToFavorites(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favoritesService.addTrackToFavorites(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFavoriteDto: UpdateFavoriteDto) {
-    return this.favoritesService.update(+id, updateFavoriteDto);
+  @Delete('track/:id')
+  @HttpCode(204)
+  @ApiNotFoundResponse({ description: 'Track id not found' })
+  removeTrackFromFavorites(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favoritesService.removeTrackFromFavorites(id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.favoritesService.remove(+id);
+  @Post('album/:id')
+  @HttpCode(201)
+  @ApiUnprocessableEntityResponse({ description: 'Album not found' })
+  addAlbumToFavorites(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favoritesService.addAlbumToFavorites(id);
+  }
+
+  @Delete('album/:id')
+  @HttpCode(204)
+  @ApiNotFoundResponse({ description: 'Album id not found' })
+  removeAlbumFromFavorites(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favoritesService.removeAlbumFromFavorites(id);
+  }
+
+  @Post('artist/:id')
+  @HttpCode(201)
+  @ApiUnprocessableEntityResponse({ description: 'Artist not found' })
+  addArtistToFavorites(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favoritesService.addArtistToFavorites(id);
+  }
+
+  @Delete('artist/:id')
+  @HttpCode(204)
+  @ApiNotFoundResponse({ description: 'Track id not found' })
+  removeArtistFromFavorites(@Param('id', ParseUUIDPipe) id: string) {
+    return this.favoritesService.removeArtistFromFavorites(id);
   }
 }

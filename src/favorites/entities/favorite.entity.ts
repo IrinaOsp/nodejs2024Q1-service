@@ -8,4 +8,8 @@ export class Favorite implements IFavorites {
   artists: string[] = [];
   albums: string[] = [];
   tracks: string[] = [];
+
+  constructor(favorite: Partial<Favorite>) {
+    Object.assign(this, favorite);
+  }
 }

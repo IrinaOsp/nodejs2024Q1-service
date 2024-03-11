@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Track } from '../entities/track.entity';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateTrackDto implements Partial<Track> {
   @ApiProperty()
@@ -13,9 +19,13 @@ export class CreateTrackDto implements Partial<Track> {
   @IsNumber()
   duration: number;
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true, required: false })
+  @IsOptional()
+  @IsUUID()
   albumId: string | null;
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true, required: false })
+  @IsOptional()
+  @IsUUID()
   artistId: string | null;
 }

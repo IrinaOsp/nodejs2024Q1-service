@@ -12,8 +12,8 @@ export class TrackService {
       id: uuidv4(),
       name: createTrackDto.name,
       duration: createTrackDto.duration,
-      albumId: createTrackDto.albumId || null,
-      artistId: createTrackDto.artistId || null,
+      albumId: createTrackDto.albumId ?? null,
+      artistId: createTrackDto.artistId ?? null,
     });
     database.tracks.push(track);
     return track;
@@ -49,6 +49,9 @@ export class TrackService {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
     database.tracks = database.tracks.filter((track) => track.id !== id);
+    database.favorites.tracks = database.favorites.tracks.filter(
+      (trackId) => trackId !== id,
+    );
     return `Track ${id} deleted`;
   }
 }

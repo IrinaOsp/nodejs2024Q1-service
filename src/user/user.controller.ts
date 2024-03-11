@@ -43,6 +43,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @ApiOkResponse({ description: 'Get user by id', type: User })
   @ApiNotFoundResponse({ description: 'User not found' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.findOne(id);

@@ -40,6 +40,7 @@ export class TrackController {
   }
 
   @Get(':id')
+  @ApiOkResponse({ description: 'Get track by id', type: Track })
   @ApiNotFoundResponse({ description: 'Track not found' })
   findOne(@Param('id', ParseUUIDPipe) id: string): Track {
     return this.trackService.findOne(id);

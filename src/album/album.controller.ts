@@ -40,6 +40,7 @@ export class AlbumController {
   }
 
   @Get(':id')
+  @ApiOkResponse({ description: 'Album found', type: Album })
   @ApiNotFoundResponse({ description: 'Album not found' })
   findOne(@Param('id', ParseUUIDPipe) id: string): Album {
     return this.albumService.findOne(id);

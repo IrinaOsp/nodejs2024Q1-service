@@ -40,6 +40,7 @@ export class ArtistController {
   }
 
   @Get(':id')
+  @ApiOkResponse({ description: 'Artist found', type: Artist })
   @ApiNotFoundResponse({ description: 'Artist not found' })
   findOne(@Param('id', ParseUUIDPipe) id: string): Artist {
     return this.artistService.findOne(id);

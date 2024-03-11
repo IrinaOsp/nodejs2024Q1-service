@@ -1,3 +1,5 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
 export interface IAlbum {
   id: string; // uuid v4
   name: string;
@@ -6,9 +8,16 @@ export interface IAlbum {
 }
 
 export class Album implements IAlbum {
+  @ApiProperty()
   id: string;
+
+  @ApiProperty()
   name: string;
+
+  @ApiProperty()
   year: number;
+
+  @ApiPropertyOptional()
   artistId: string | null;
 
   constructor(album: Partial<Album>) {

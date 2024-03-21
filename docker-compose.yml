@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  db:
+    container_name: postgres
+    build:
+      context: .
+      dockerfile: ./docker/db/Dockerfile
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_NAME=${DB_NAME}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    ports:
+      - ${PORT}:${PORT}
+    restart: always
+    volumes:
+      - .:/app
+      - node-modules:/app/node_modules
+
+volumes:
+  postgres: {}
+  node-modules: {}

@@ -31,7 +31,13 @@ export class UserService {
           updatedAt: new Date(res.updatedAt).getTime(),
         };
       });
-    return user;
+    return {
+      id: user.id,
+      login: user.login,
+      version: user.version,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 
   async findAll() {
@@ -47,19 +53,20 @@ export class UserService {
   }
 
   async findOne(id: string) {
-    const user = await this.dbService.user
-      .findUnique({ where: { id } })
-      .then((res) => {
-        return {
-          ...res,
-          createdAt: new Date(res.createdAt).getTime(),
-          updatedAt: new Date(res.updatedAt).getTime(),
-        };
-      });
-    if (!user) {
+    try {
+      const user = await this.dbService.user
+        .findUnique({ where: { id } })
+        .then((res) => {
+          return {
+            ...res,
+            createdAt: new Date(res.createdAt).getTime(),
+            updatedAt: new Date(res.updatedAt).getTime(),
+          };
+        });
+      return user;
+    } catch (error) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
-    return user;
   }
 
   async update(id: string, newPassword: string, oldPassword: string) {
@@ -71,21 +78,20 @@ export class UserService {
       throw new ForbiddenException(`Old password ${oldPassword} is wrong`);
     }
     user.password = newPassword;
-    const updatedUser = await this.dbService.user
-      .update({
-        where: { id },
-        data: user,
-      })
-      .then((res) => {
-        return {
-          ...res,
-          createdAt: new Date(res.createdAt).getTime(),
-          updatedAt: new Date(res.updatedAt).getTime(),
-        };
-      });
-    // user.version++;
-    // user.updatedAt = Date.now();
-    return updatedUser;
+    user.version++;
+    user.updatedAt = new Date(Date.now());
+    const updatedUser = await this.dbService.user.update({
+      where: { id },
+      data: user,
+    });
+
+    return {
+      id: updatedUser.id,
+      login: updatedUser.login,
+      version: updatedUser.version,
+      createdAt: new Date(updatedUser.createdAt).getTime(),
+      updatedAt: new Date(updatedUser.updatedAt).getTime(),
+    };
   }
 
   async remove(id: string) {

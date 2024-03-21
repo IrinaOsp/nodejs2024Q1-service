@@ -32,7 +32,9 @@ export class UserController {
 
   @Post()
   @ApiCreatedResponse({ description: 'New user created', type: User })
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<Omit<User, 'password'>> {
     return await this.userService.create(createUserDto);
   }
 

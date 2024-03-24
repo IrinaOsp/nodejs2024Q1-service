@@ -29,38 +29,38 @@ export class ArtistController {
     description: 'Artist successfully created',
     type: Artist,
   })
-  create(@Body() createArtistDto: CreateArtistDto): Artist {
-    return this.artistService.create(createArtistDto);
+  async create(@Body() createArtistDto: CreateArtistDto) {
+    return await this.artistService.create(createArtistDto);
   }
 
   @Get()
   @ApiOkResponse({ description: 'List of artists', type: [Artist] })
-  findAll() {
-    return this.artistService.findAll();
+  async findAll() {
+    return await this.artistService.findAll();
   }
 
   @Get(':id')
   @ApiOkResponse({ description: 'Artist found', type: Artist })
   @ApiNotFoundResponse({ description: 'Artist not found' })
-  findOne(@Param('id', ParseUUIDPipe) id: string): Artist {
-    return this.artistService.findOne(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.artistService.findOne(id);
   }
 
   @Put(':id')
   @ApiOkResponse({ description: 'Artist successfully updated', type: Artist })
   @ApiNotFoundResponse({ description: 'Artist not found' })
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateArtistDto: UpdateArtistDto,
   ) {
-    return this.artistService.update(id, updateArtistDto);
+    return await this.artistService.update(id, updateArtistDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
   @ApiNoContentResponse({ description: 'Artist successfully deleted' })
   @ApiNotFoundResponse({ description: 'Artist not found' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.artistService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.artistService.remove(id);
   }
 }

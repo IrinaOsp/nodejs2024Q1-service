@@ -40,7 +40,7 @@ export class UserController {
 
   @Get()
   @ApiOkResponse({ description: 'Get all users', type: [User] })
-  async findAll(): Promise<User[]> {
+  async findAll() {
     return await this.userService.findAll();
   }
 

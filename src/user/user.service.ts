@@ -22,7 +22,7 @@ export class UserService {
       // createdAt: currentTimeStamp,
       // updatedAt: currentTimeStamp,
     });
-    const user: IUser = await this.dbService.user
+    const user = await this.dbService.user
       .create({ data: userEntity })
       .then((res) => {
         return {

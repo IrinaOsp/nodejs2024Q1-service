@@ -11,10 +11,10 @@
 git clone https://github.com/IrinaOsp/nodejs2023Q2-service.git
 ```
 
-## Switch to develop branch
+## Switch to task branch
 
 ```
-git checkout develop
+git checkout part2
 ```
 
 ## Installing NPM modules
@@ -23,15 +23,19 @@ git checkout develop
 npm install
 ```
 
-## Running application
+## Create .env on the basis of .env.example
+
+## Running multi-container application
 
 ```
-npm start
+npm run docker:up
 ```
 
-After starting the app on port (4000 as default, but you can create .env file and set the desired port as PORT=6000) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+## Scan images for security vulnerabilities
+
+```
+npm run docker:scan
+```
 
 ## Endpoints
 

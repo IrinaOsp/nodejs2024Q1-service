@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   db:
     container_name: postgres
@@ -14,6 +15,8 @@ services:
       - postgres:/var/lib/postgresql/data
     ports:
       - ${DB_PORT}:${DB_PORT}
+    networks:
+      - library-network
 
   app:
     container_name: app
@@ -26,7 +29,16 @@ services:
     volumes:
       - .:/app
       - node-modules:/app/node_modules
+    depends_on:
+      - db
+    networks:
+      - library-network
 
 volumes:
   postgres: {}
   node-modules: {}
+
+networks:
+  library-network:
+    name: library-network
+    driver: bridge

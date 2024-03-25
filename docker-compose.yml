@@ -12,7 +12,8 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_NAME=${DB_NAME}
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
+      - db-logs:/var/log/postgresql
     ports:
       - ${DB_PORT}:${DB_PORT}
     networks:
@@ -26,6 +27,8 @@ services:
     ports:
       - ${PORT}:${PORT}
     restart: always
+    environment:
+      - PORT=${PORT}
     volumes:
       - .:/app
       - node-modules:/app/node_modules
@@ -35,8 +38,9 @@ services:
       - library-network
 
 volumes:
-  postgres: {}
   node-modules: {}
+  db-data: {}
+  db-logs: {}
 
 networks:
   library-network:

@@ -5,38 +5,72 @@ import {
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
-import { database } from 'src/db/database';
 import { IUser, User } from './entities/user.entity';
+import { DbService } from '../db/db.service';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    const user: IUser = new User({
+  constructor(private dbService: DbService) {}
+
+  async create(createUserDto: CreateUserDto) {
+    // const currentTimeStamp = Date.now();
+    const userEntity: Omit<IUser, 'createdAt' | 'updatedAt'> = new User({
       login: createUserDto.login,
       password: createUserDto.password,
       id: uuidv4(),
       version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      // createdAt: currentTimeStamp,
+      // updatedAt: currentTimeStamp,
     });
-    database.users.push(user);
-    return user;
+    const user = await this.dbService.user
+      .create({ data: userEntity })
+      .then((res) => {
+        return {
+          ...res,
+          createdAt: new Date(res.createdAt).getTime(),
+          updatedAt: new Date(res.updatedAt).getTime(),
+        };
+      });
+    return {
+      id: user.id,
+      login: user.login,
+      version: user.version,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 
-  findAll() {
-    return database.users;
+  async findAll() {
+    return await this.dbService.user.findMany().then((res) => {
+      return res.map((user) => {
+        return {
+          ...user,
+          createdAt: new Date(user.createdAt).getTime(),
+          updatedAt: new Date(user.updatedAt).getTime(),
+        };
+      });
+    });
   }
 
-  findOne(id: string) {
-    const user = database.users.find((user) => user.id === id);
-    if (!user) {
+  async findOne(id: string) {
+    try {
+      const user = await this.dbService.user
+        .findUnique({ where: { id } })
+        .then((res) => {
+          return {
+            ...res,
+            createdAt: new Date(res.createdAt).getTime(),
+            updatedAt: new Date(res.updatedAt).getTime(),
+          };
+        });
+      return user;
+    } catch (error) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
-    return user;
   }
 
-  update(id: string, newPassword: string, oldPassword: string) {
-    const user = database.users.find((user) => user.id === id);
+  async update(id: string, newPassword: string, oldPassword: string) {
+    const user = await this.dbService.user.findUnique({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
@@ -45,16 +79,27 @@ export class UserService {
     }
     user.password = newPassword;
     user.version++;
-    user.updatedAt = Date.now();
-    return user;
+    user.updatedAt = new Date(Date.now());
+    const updatedUser = await this.dbService.user.update({
+      where: { id },
+      data: user,
+    });
+
+    return {
+      id: updatedUser.id,
+      login: updatedUser.login,
+      version: updatedUser.version,
+      createdAt: new Date(updatedUser.createdAt).getTime(),
+      updatedAt: new Date(updatedUser.updatedAt).getTime(),
+    };
   }
 
-  remove(id: string) {
-    const user = database.users.find((user) => user.id === id);
+  async remove(id: string) {
+    const user = await this.dbService.user.findUnique({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
-    database.users = database.users.filter((user) => user.id !== id);
+    await this.dbService.user.delete({ where: { id } });
     return `User ${id} deleted`;
   }
 }

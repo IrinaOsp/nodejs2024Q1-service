@@ -48,14 +48,5 @@ export class ArtistService {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
     await this.dbService.artist.delete({ where: { id } });
-    // database.tracks = database.tracks.map((track) =>
-    //   track.artistId === id ? { ...track, artistId: null } : track,
-    // );
-    // database.albums = database.albums.map((album) =>
-    //   album.artistId === id ? { ...album, artistId: null } : album,
-    // );
-    // database.favorites.artists = database.favorites.artists.filter(
-    //   (artistId) => artistId !== id,
-    // );
   }
 }

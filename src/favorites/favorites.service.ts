@@ -3,7 +3,6 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-// import { IFavoritesResponse } from './interfaces/Ifavorites';
 import { DbService } from 'src/db/db.service';
 
 @Injectable()

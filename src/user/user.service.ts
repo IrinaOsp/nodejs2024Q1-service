@@ -13,14 +13,11 @@ export class UserService {
   constructor(private dbService: DbService) {}
 
   async create(createUserDto: CreateUserDto) {
-    // const currentTimeStamp = Date.now();
     const userEntity: Omit<IUser, 'createdAt' | 'updatedAt'> = new User({
       login: createUserDto.login,
       password: createUserDto.password,
       id: uuidv4(),
       version: 1,
-      // createdAt: currentTimeStamp,
-      // updatedAt: currentTimeStamp,
     });
     const user = await this.dbService.user
       .create({ data: userEntity })

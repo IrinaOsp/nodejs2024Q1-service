@@ -49,11 +49,5 @@ export class AlbumService {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
     await this.dbService.album.delete({ where: { id } });
-    // database.tracks = database.tracks.map((track) =>
-    //   track.albumId === id ? { ...track, albumId: null } : track,
-    // );
-    // database.favorites.albums = database.favorites.albums.filter(
-    //   (albumId) => albumId !== id,
-    // );
   }
 }

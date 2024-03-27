@@ -50,9 +50,6 @@ export class TrackService {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
     await this.dbService.track.delete({ where: { id } });
-    // database.favorites.tracks = database.favorites.tracks.filter(
-    //   (trackId) => trackId !== id,
-    // );
     return `Track ${id} deleted`;
   }
 }

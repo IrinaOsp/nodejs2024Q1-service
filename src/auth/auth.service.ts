@@ -18,13 +18,10 @@ export class AuthService {
     if (!(await bcrypt.compare(password, user.password))) {
       throw new ForbiddenException(`Password ${password} is wrong`);
     }
-    const accessToken = await this.jwtService.signAsync(
-      { id: user.id, login: user.login },
-      {
-        secret: process.env.JWT_SECRET_KEY,
-        expiresIn: process.env.TOKEN_EXPIRE_TIME,
-      },
-    );
+    const accessToken = await this.jwtService.signAsync({
+      id: user.id,
+      login: user.login,
+    });
     const refreshToken = await this.jwtService.signAsync(
       { id: user.id, login: user.login },
       {
@@ -38,13 +35,10 @@ export class AuthService {
   async refresh(token: string) {
     try {
       const payload = await this.validateRefreshToken(token);
-      const accessToken = await this.jwtService.signAsync(
-        { userId: payload.id, login: payload.login },
-        {
-          secret: process.env.JWT_SECRET_KEY,
-          expiresIn: process.env.TOKEN_EXPIRE_TIME,
-        },
-      );
+      const accessToken = await this.jwtService.signAsync({
+        userId: payload.id,
+        login: payload.login,
+      });
       const refreshToken = await this.jwtService.signAsync(
         { userId: payload.id, login: payload.login },
         {

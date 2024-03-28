@@ -80,7 +80,7 @@ export class AuthController {
   @ApiForbiddenResponse({ description: 'Invalid or expired refresh token' })
   @ApiUnauthorizedResponse({ description: 'No refresh token' })
   async refresh(@Body() { refreshToken }: RefreshTokenDto) {
-    if (!refreshToken) {
+    if (!refreshToken || typeof refreshToken !== 'string') {
       throw new UnauthorizedException('No refresh token');
     }
     try {

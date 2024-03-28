@@ -99,4 +99,8 @@ export class UserService {
     await this.dbService.user.delete({ where: { id } });
     return `User ${id} deleted`;
   }
+
+  async findUserByLogin(login: string) {
+    return await this.dbService.user.findFirst({ where: { login } });
+  }
 }

@@ -14,7 +14,6 @@ import {
   ApiTags,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { IFavoritesResponse } from './interfaces/Ifavorites';
 
 @ApiTags('Favorites')
 @Controller('favs')

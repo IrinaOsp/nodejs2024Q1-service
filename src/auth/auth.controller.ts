@@ -11,7 +11,17 @@ import { AuthService } from './auth.service';
 import { UserService } from 'src/user/user.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -21,6 +31,8 @@ export class AuthController {
 
   @Post('signup')
   @HttpCode(201)
+  @ApiCreatedResponse({ type: CreateUserDto })
+  @ApiBadRequestResponse({ description: 'Invalid credentials' })
   async signup(@Body() { login, password }: CreateUserDto) {
     if (
       !login ||
@@ -42,7 +54,14 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() { login, password }: CreateUserDto) {
+  @HttpCode(200)
+  @ApiOkResponse({ description: 'Login successful' })
+  @ApiBadRequestResponse({ description: 'Login and/or password are invalid' })
+  @ApiForbiddenResponse({ description: 'Authentication failed' })
+  async login(@Body() { login, password }: CreateUserDto): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  }> {
     if (
       !login ||
       !password ||
@@ -51,12 +70,16 @@ export class AuthController {
     ) {
       throw new BadRequestException('Invalid credentials');
     }
-    return await this.authService.login(login, password);
+    const tokens = await this.authService.login(login, password);
+    return tokens;
   }
 
   @Post('refresh')
   @HttpCode(200)
-  async refresh(@Body() { refreshToken }: { refreshToken: string }) {
+  @ApiOkResponse({ description: 'Refresh successful' })
+  @ApiForbiddenResponse({ description: 'Invalid or expired refresh token' })
+  @ApiUnauthorizedResponse({ description: 'No refresh token' })
+  async refresh(@Body() { refreshToken }: RefreshTokenDto) {
     if (!refreshToken) {
       throw new UnauthorizedException('No refresh token');
     }

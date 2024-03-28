@@ -17,9 +17,11 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { Track } from './entities/track.entity';
 
+@ApiTags('Track')
 @Controller('track')
 export class TrackController {
   constructor(private readonly trackService: TrackService) {}

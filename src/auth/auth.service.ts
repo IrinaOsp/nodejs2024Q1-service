@@ -38,22 +38,21 @@ export class AuthService {
   async refresh(token: string) {
     try {
       const payload = await this.validateRefreshToken(token);
-      return {
-        accessToken: this.jwtService.sign(
-          { userId: payload.id, login: payload.login },
-          {
-            secret: process.env.JWT_SECRET_KEY,
-            expiresIn: process.env.TOKEN_EXPIRE_TIME,
-          },
-        ),
-        refreshToken: this.jwtService.sign(
-          { userId: payload.id, login: payload.login },
-          {
-            secret: process.env.JWT_SECRET_REFRESH_KEY,
-            expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
-          },
-        ),
-      };
+      const accessToken = await this.jwtService.signAsync(
+        { userId: payload.id, login: payload.login },
+        {
+          secret: process.env.JWT_SECRET_KEY,
+          expiresIn: process.env.TOKEN_EXPIRE_TIME,
+        },
+      );
+      const refreshToken = await this.jwtService.signAsync(
+        { userId: payload.id, login: payload.login },
+        {
+          secret: process.env.JWT_SECRET_REFRESH_KEY,
+          expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
+        },
+      );
+      return { accessToken, refreshToken };
     } catch (error) {
       throw new Error(error);
     }

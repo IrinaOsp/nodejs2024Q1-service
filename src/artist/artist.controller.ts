@@ -17,9 +17,11 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { Artist } from './entities/artist.entity';
 
+@ApiTags('Artist')
 @Controller('artist')
 export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}

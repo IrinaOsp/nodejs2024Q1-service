@@ -4,6 +4,8 @@ import {
   Body,
   HttpCode,
   BadRequestException,
+  UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from 'src/user/user.service';
@@ -28,12 +30,15 @@ export class AuthController {
     ) {
       throw new BadRequestException('Invalid credentials');
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(
+      password,
+      Number(process.env.CRYPT_SALT),
+    );
     const user = await this.userService.create({
       login,
       password: hashedPassword,
     });
-    return `User ${user.login} was created`;
+    return user;
   }
 
   @Post('login')
@@ -46,12 +51,22 @@ export class AuthController {
     ) {
       throw new BadRequestException('Invalid credentials');
     }
-    const jwt = await this.authService.login(login, password);
-    return jwt;
+    return await this.authService.login(login, password);
   }
 
   @Post('refresh')
+  @HttpCode(200)
   async refresh(@Body() { refreshToken }: { refreshToken: string }) {
-    return await this.authService.refresh(refreshToken);
+    if (!refreshToken) {
+      throw new UnauthorizedException('No refresh token');
+    }
+    try {
+      return await this.authService.refresh(refreshToken);
+    } catch (error) {
+      throw new ForbiddenException(
+        'Invalid refresh token or expired',
+        error?.message,
+      );
+    }
   }
 }

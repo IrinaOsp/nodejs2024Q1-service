@@ -20,6 +20,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Public } from './Public.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -29,6 +30,7 @@ export class AuthController {
     private readonly userService: UserService,
   ) {}
 
+  @Public()
   @Post('signup')
   @HttpCode(201)
   @ApiCreatedResponse({ type: CreateUserDto })
@@ -53,6 +55,7 @@ export class AuthController {
     return user;
   }
 
+  @Public()
   @Post('login')
   @HttpCode(200)
   @ApiOkResponse({ description: 'Login successful' })
@@ -74,6 +77,7 @@ export class AuthController {
     return tokens;
   }
 
+  @Public()
   @Post('refresh')
   @HttpCode(200)
   @ApiOkResponse({ description: 'Refresh successful' })

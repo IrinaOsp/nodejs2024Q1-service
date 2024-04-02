@@ -10,7 +10,7 @@ export interface IUser {
   updatedAt: number; // timestamp of last update
 }
 
-export class User implements IUser {
+export class User implements Partial<IUser> {
   @ApiProperty()
   id: string;
 
@@ -25,10 +25,11 @@ export class User implements IUser {
   version: number;
 
   @ApiProperty()
-  createdAt: number;
+  createdAt?: number;
 
   @ApiProperty()
-  updatedAt: number;
+  updatedAt?: number;
+
   constructor(user: Partial<User>) {
     Object.assign(this, user);
   }

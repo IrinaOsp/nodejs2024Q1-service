@@ -2,12 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { database } from 'src/db/database';
 import { ITrack, Track } from './entities/track.entity';
+import { DbService } from 'src/db/db.service';
 
 @Injectable()
 export class TrackService {
-  create(createTrackDto: CreateTrackDto) {
+  constructor(private dbService: DbService) {}
+
+  async create(createTrackDto: CreateTrackDto) {
     const track: ITrack = new Track({
       id: uuidv4(),
       name: createTrackDto.name,
@@ -15,24 +17,23 @@ export class TrackService {
       albumId: createTrackDto.albumId ?? null,
       artistId: createTrackDto.artistId ?? null,
     });
-    database.tracks.push(track);
-    return track;
+    return await this.dbService.track.create({ data: track });
   }
 
-  findAll() {
-    return database.tracks;
+  async findAll() {
+    return await this.dbService.track.findMany();
   }
 
-  findOne(id: string) {
-    const track = database.tracks.find((track) => track.id === id);
+  async findOne(id: string) {
+    const track = await this.dbService.track.findUnique({ where: { id } });
     if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
     return track;
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto) {
-    const track = database.tracks.find((track) => track.id === id);
+  async update(id: string, updateTrackDto: UpdateTrackDto) {
+    const track = await this.dbService.track.findUnique({ where: { id } });
     if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
@@ -40,18 +41,15 @@ export class TrackService {
     track.duration = updateTrackDto.duration ?? track.duration;
     track.albumId = updateTrackDto.albumId ?? track.albumId;
     track.artistId = updateTrackDto.artistId ?? track.artistId;
-    return track;
+    return await this.dbService.track.update({ where: { id }, data: track });
   }
 
-  remove(id: string) {
-    const track = database.tracks.find((track) => track.id === id);
+  async remove(id: string) {
+    const track = await this.dbService.track.findUnique({ where: { id } });
     if (!track) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
-    database.tracks = database.tracks.filter((track) => track.id !== id);
-    database.favorites.tracks = database.favorites.tracks.filter(
-      (trackId) => trackId !== id,
-    );
+    await this.dbService.track.delete({ where: { id } });
     return `Track ${id} deleted`;
   }
 }

@@ -3,56 +3,50 @@ import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist, IArtist } from './entities/artist.entity';
-import { database } from 'src/db/database';
+import { DbService } from '../db/db.service';
 
 @Injectable()
 export class ArtistService {
-  create(createArtistDto: CreateArtistDto) {
+  constructor(private dbService: DbService) {}
+
+  async create(createArtistDto: CreateArtistDto) {
     const artist: IArtist = new Artist({
       id: uuidv4(),
       name: createArtistDto.name,
       grammy: createArtistDto.grammy,
     });
-    database.artists.push(artist);
+    await this.dbService.artist.create({ data: artist });
     return artist;
   }
 
-  findAll() {
-    return database.artists;
+  async findAll() {
+    return await this.dbService.artist.findMany();
   }
 
-  findOne(id: string) {
-    const artist = database.artists.find((artist) => artist.id === id);
+  async findOne(id: string) {
+    const artist = await this.dbService.artist.findUnique({ where: { id } });
     if (!artist) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
     return artist;
   }
 
-  update(id: string, updateArtistDto: UpdateArtistDto) {
-    const artist = database.artists.find((artist) => artist.id === id);
+  async update(id: string, updateArtistDto: UpdateArtistDto) {
+    const artist = await this.dbService.artist.findUnique({ where: { id } });
     if (!artist) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
     artist.name = updateArtistDto.name ?? artist.name;
     artist.grammy = updateArtistDto.grammy ?? artist.grammy;
+    await this.dbService.artist.update({ where: { id }, data: artist });
     return artist;
   }
 
-  remove(id: string) {
-    const artist = database.artists.find((artist) => artist.id === id);
+  async remove(id: string) {
+    const artist = await this.dbService.artist.findUnique({ where: { id } });
     if (!artist) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
-    database.artists = database.artists.filter((artist) => artist.id !== id);
-    database.tracks = database.tracks.map((track) =>
-      track.artistId === id ? { ...track, artistId: null } : track,
-    );
-    database.albums = database.albums.map((album) =>
-      album.artistId === id ? { ...album, artistId: null } : album,
-    );
-    database.favorites.artists = database.favorites.artists.filter(
-      (artistId) => artistId !== id,
-    );
+    await this.dbService.artist.delete({ where: { id } });
   }
 }

@@ -17,9 +17,11 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { Track } from './entities/track.entity';
 
+@ApiTags('Track')
 @Controller('track')
 export class TrackController {
   constructor(private readonly trackService: TrackService) {}
@@ -29,38 +31,38 @@ export class TrackController {
     description: 'Track created successfully',
     type: Track,
   })
-  create(@Body() createTrackDto: CreateTrackDto): Track {
-    return this.trackService.create(createTrackDto);
+  async create(@Body() createTrackDto: CreateTrackDto) {
+    return await this.trackService.create(createTrackDto);
   }
 
   @Get()
   @ApiOkResponse({ description: 'Get all tracks', type: [Track] })
-  findAll() {
-    return this.trackService.findAll();
+  async findAll() {
+    return await this.trackService.findAll();
   }
 
   @Get(':id')
   @ApiOkResponse({ description: 'Get track by id', type: Track })
   @ApiNotFoundResponse({ description: 'Track not found' })
-  findOne(@Param('id', ParseUUIDPipe) id: string): Track {
-    return this.trackService.findOne(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.trackService.findOne(id);
   }
 
   @Put(':id')
   @ApiOkResponse({ description: 'Track updated successfully', type: Track })
   @ApiNotFoundResponse({ description: 'Track not found' })
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTrackDto: UpdateTrackDto,
   ) {
-    return this.trackService.update(id, updateTrackDto);
+    return await this.trackService.update(id, updateTrackDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
   @ApiNoContentResponse({ description: 'Track deleted successfully' })
   @ApiNotFoundResponse({ description: 'Track not found' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.trackService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.trackService.remove(id);
   }
 }

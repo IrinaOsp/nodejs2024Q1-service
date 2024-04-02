@@ -32,39 +32,41 @@ export class UserController {
 
   @Post()
   @ApiCreatedResponse({ description: 'New user created', type: User })
-  create(@Body() createUserDto: CreateUserDto): User {
-    return this.userService.create(createUserDto);
+  async create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<Omit<User, 'password'>> {
+    return await this.userService.create(createUserDto);
   }
 
   @Get()
   @ApiOkResponse({ description: 'Get all users', type: [User] })
-  findAll(): User[] {
-    return this.userService.findAll();
+  async findAll() {
+    return await this.userService.findAll();
   }
 
   @Get(':id')
   @ApiOkResponse({ description: 'Get user by id', type: User })
   @ApiNotFoundResponse({ description: 'User not found' })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.userService.findOne(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.userService.findOne(id);
   }
 
   @Put(':id')
   @ApiOkResponse({ description: 'User successfully updated', type: User })
   @ApiNotFoundResponse({ description: 'User not found' })
   @ApiForbiddenResponse({ description: 'Old password is wrong' })
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() { oldPassword, newPassword }: UpdatePasswordDto,
   ) {
-    return this.userService.update(id, newPassword, oldPassword);
+    return await this.userService.update(id, newPassword, oldPassword);
   }
 
   @Delete(':id')
   @HttpCode(204)
   @ApiNoContentResponse({ description: `User successfully deleted` })
   @ApiNotFoundResponse({ description: 'User not found' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.userService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.userService.remove(id);
   }
 }
